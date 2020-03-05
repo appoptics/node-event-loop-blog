@@ -1,0 +1,20 @@
+{
+  "name": "event-loop-blog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "get-sync": "curl localhost:8888/sync -s -w ' %{time_starttransfer}\n'",
+    "get-async": "curl localhost:8888/async -s -w ' %{time_starttransfer}\n'",
+    "multiload": "clear && npx multiload  --ws-ip=localhost:8888 -a get-endpoint:rate=0.5:async --no-config=true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "appoptics-apm": "^7.1.1",
+    "express": "^4.17.1",
+    "multiload": "https://api.github.com/repos/bmacnaughton/multiload/tarball/v3.3.0"
+  }
+}
