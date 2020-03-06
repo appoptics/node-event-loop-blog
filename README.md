@@ -16,16 +16,22 @@ multiload - a CLI tool for generating loads against a server.
 
 It's designed to be run from terminal windows.
 
-In one terminal execute `$ npm start` to start the server. It is hardcoded to run
-on `localhost:8888` so change it if you need to.
+Make sure you have APPOPTICS_SERVICE_KEY defined in the environment. That's
+necessary for `appoptics-apm` and for reporting application-specific
+metrics. If you don't have a service key see the following section.
+
+In one terminal execute `$ npm start` to start the server. It is hardcoded to
+run on `localhost:8888` so change it if you need to.
 
 In another terminal execute `$ npm run get-sync` or `$npm run get-async` to hit
 the endpoint you choose. It will output the server response and append curl's
 timing to the end of the line.
 
 If you want to run a continuous load against it execute `$ npm run multiload`.
-If you don't have an AppOptics account you can get a free
-[dev edition](https://www.appoptics.com/free-apm-software) to view the data in
-real time. That's a free account for development use, not a free trial.
 
+## If you don't have an AppOptics account
+
+Get a free [dev edition](https://www.appoptics.com/free-apm-software) account
+to view the data in real time. That's a free account limited to development
+use, not a just free trial.
 
