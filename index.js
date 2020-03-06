@@ -96,7 +96,7 @@ app.listen(8888, 'localhost')
 //
 // send metrics on "work" every 10 seconds.
 //
-const {promise} = metrics.sendOnInterval(10 * 1e3, function () {
+const promise = metrics.sendOnInterval(10 * 1e3, function () {
   const stats = getStats();
   const metrics = {
     'eventloop-blog.timeoutEventCount': stats.timeoutEventCount,
