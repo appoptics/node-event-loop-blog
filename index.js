@@ -7,13 +7,21 @@ const Express = require('express');
 const crypto = require('crypto');
 const Metrics = require('./lib/metrics');
 
+// how many times to fill the buffer and how big the buffer is
+const kFillCount = 100;
+const kBufferSize = 10000000;
+
 // insert your access token here
-const accessToken = process.env.AO_SWOKEN_PROD;
+if (!process.env.APPOPTICS_SERVICE_KEY) {
+  console.log('? ERROR: environment variable APPOPTICS_SERVICE_KEY not found');
+  console.log('please either define it or define it in the code');
+  process.exit(1);
+}
+const [token] = process.env.APPOPTICS_SERVICE_KEY.split(':');
 const tags = {service: 'event-loop-blog'};
-const metrics = new Metrics(accessToken, tags);
+const metrics = new Metrics(token, tags);
 
 const app = new Express();
-const kFillCount = 100;
 
 //
 // stats we'll collect on the application's activities
@@ -30,7 +38,7 @@ let eventTotalDelay = 0;
 //
 app.get('/sync', function sync (req, res) {
   const startTime = process.hrtime();
-  const buffer = Buffer.alloc(10000000);
+  const buffer = Buffer.alloc(kBufferSize);
 
   for (let i = 0; i < kFillCount; i++) {
     crypto.randomFillSync(buffer);
@@ -47,7 +55,7 @@ app.get('/sync', function sync (req, res) {
 //
 app.get('/async', function async (req, res) {
   const startTime = process.hrtime();
-  const buffer = Buffer.alloc(10000000);
+  const buffer = Buffer.alloc(kBufferSize);
   let count = 0;
 
   function fillBuffer () {
@@ -88,7 +96,7 @@ app.listen(8888, 'localhost')
 //
 // send metrics on "work" every 10 seconds.
 //
-metrics.sendOnInterval(10 * 1e3, function () {
+const {promise} = metrics.sendOnInterval(10 * 1e3, function () {
   const stats = getStats();
   const metrics = {
     'eventloop-blog.timeoutEventCount': stats.timeoutEventCount,
@@ -99,7 +107,12 @@ metrics.sendOnInterval(10 * 1e3, function () {
     'eventloop-blog.asyncAverageSeconds': stats.asyncAverageSeconds,
   }
   return {metrics};
-});
+})
+
+promise.catch(e => {
+  console.log('? ERROR sending metrics', e);
+  process.exit(1);
+})
 
 //
 // pretend work we're trying to do with our timeout
